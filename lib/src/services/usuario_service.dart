@@ -36,8 +36,8 @@ class UsuarioService {
     try {
       var uri = Uri.parse(_urlRoot);
       String usuarioBody = usuarioToJson(usuario);
-      final Map<String, String> _headers = {"content-type": "application/json"};
-      var response = await http.post(uri, headers: _headers, body: usuarioBody);
+      final Map<String, String> headers = {"content-type": "application/json"};
+      var response = await http.post(uri, headers: headers, body: usuarioBody);
       if (response.body.isEmpty) return 400;
       Map<String, dynamic> content = json.decode(response.body);
       int result = content["estado"];

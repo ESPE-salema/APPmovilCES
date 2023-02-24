@@ -114,8 +114,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                             int result =
                                                 await _usrServ.postUsuario(usr);
                                             if (result == 201) {
+                                              // ignore: use_build_context_synchronously
                                               Navigator.pop(context);
                                             } else if (result == 500) {
+                                              // ignore: use_build_context_synchronously
                                               showDialog(
                                                   context: context,
                                                   builder: (context) =>

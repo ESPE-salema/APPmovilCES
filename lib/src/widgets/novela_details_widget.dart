@@ -12,6 +12,7 @@ class NovelaDetailsWidget extends StatefulWidget {
   final String id;
 
   @override
+  // ignore: library_private_types_in_public_api
   _NovelaDetailsWidgetState createState() => _NovelaDetailsWidgetState();
 }
 
@@ -43,9 +44,9 @@ class _NovelaDetailsWidgetState extends State<NovelaDetailsWidget>
             indicatorColor: Palette.color,
             tabs: _tabs,
             controller: _tabController),
-        body: TabBarView(children: [
+        body: TabBarView(controller: _tabController, children: [
           NovelaDetailsContentWidget(novela: widget.novela),
           CapituloWidget(id: widget.id)
-        ], controller: _tabController));
+        ]));
   }
 }

@@ -1,9 +1,12 @@
-import 'package:avatar_glow/avatar_glow.dart';
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:app_movil_ces/src/models/capitulo_model.dart';
-import 'package:app_movil_ces/src/services/speech_service.dart';
 import 'package:app_movil_ces/src/utils/validation.dart';
+import 'package:flutter/services.dart';
+import 'package:read_pdf_text/read_pdf_text.dart';
 
 class CapituloFirebaseFormWidget extends StatefulWidget {
   const CapituloFirebaseFormWidget(
@@ -24,6 +27,7 @@ class _CapituloFirebaseFormWidgetState
   final _formKey = GlobalKey<FormState>();
   String text = '';
   bool isListening = false;
+  late TextEditingController _pdfText;
 
   @override
   void initState() {
@@ -32,6 +36,15 @@ class _CapituloFirebaseFormWidgetState
         .collection('novelas')
         .doc(widget.id)
         .collection('capitulos');
+    _pdfText = TextEditingController(text: '');
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    _pdfText.addListener(() {});
+    super.dispose();
   }
 
   @override
@@ -39,82 +52,87 @@ class _CapituloFirebaseFormWidgetState
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-          centerTitle: true,
-          title: const Text("Agregar novela"),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () {
-                  _sendForm();
-                },
-                icon: const Icon(Icons.check_circle_outline))
-          ]),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          SizedBox(
-            width: size.width,
-            child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  child: Column(children: [
-                    TextFormField(
-                        keyboardType: TextInputType.text,
-                        initialValue: _capitulo.tituloCapitulo,
-                        onSaved: (value) {
-                          //Este evento se ejecuta cuando el Form ha sido guardado localmente
-                          _capitulo.tituloCapitulo =
-                              value; //Asigna el valor del TextFormField al atributo del modelo
-                        },
-                        validator: (value) {
-                          return validateString(value!);
-                        },
-                        decoration: const InputDecoration(labelText: "Titulo"),
-                        maxLength: 50,
-                        maxLines: 1),
-                    const Text(
-                      "Ingresar el contenido",
-                      textAlign: TextAlign.start,
-                    ),
-                    TextFormField(
-                        keyboardType: TextInputType.text,
-                        controller: TextEditingController(text: text),
-                        onSaved: (value) {
-                          //Este evento se ejecuta cuando el Form ha sido guardado localmente
-                          _capitulo.contenido =
-                              value; //Asigna el valor del TextFormField al atributo del modelo
-                        },
-                        validator: (value) {
-                          return validateString(value!);
-                        },
-                        maxLength: 1000,
-                        maxLines: 20),
-                  ]),
-                )),
-          ),
-        ],
-      )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: AvatarGlow(
-        animate: isListening,
-        endRadius: 75,
-        glowColor: Theme.of(context).primaryColor,
-        child: FloatingActionButton(
-          child: Icon(isListening ? Icons.mic : Icons.mic_none, size: 36),
-          onPressed: toggleRecording,
-        ),
-      ),
-    );
-  }
+        appBar: AppBar(
+            centerTitle: true,
+            title: const Text("Agregar capitulo"),
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () {
+                    _sendForm();
+                  },
+                  icon: const Icon(Icons.check_circle_outline))
+            ]),
+        body: SingleChildScrollView(
+            child: Column(
+          children: [
+            SizedBox(
+              width: size.width,
+              child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 10.0),
+                    child: Column(children: [
+                      TextFormField(
+                          keyboardType: TextInputType.text,
+                          initialValue: _capitulo.tituloCapitulo,
+                          onSaved: (value) {
+                            //Este evento se ejecuta cuando el Form ha sido guardado localmente
+                            _capitulo.tituloCapitulo =
+                                value; //Asigna el valor del TextFormField al atributo del modelo
+                          },
+                          validator: (value) {
+                            return validateString(value!);
+                          },
+                          decoration:
+                              const InputDecoration(labelText: "Titulo"),
+                          maxLength: 50,
+                          maxLines: 1),
+                      const Text(
+                        "Escriba el contenido",
+                        textAlign: TextAlign.start,
+                      ),
+                      TextFormField(
+                          controller: _pdfText,
+                          keyboardType: TextInputType.text,
+                          initialValue: _capitulo.contenido,
+                          onSaved: (value) {
+                            //Este evento se ejecuta cuando el Form ha sido guardado localmente
+                            _capitulo.contenido =
+                                value; //Asigna el valor del TextFormField al atributo del modelo
+                          },
+                          //validator: (value) {return validateString(value!);},
+                          maxLength: 10000,
+                          maxLines: 20),
+                    ]),
+                  )),
+            ),
+          ],
+        )),
+        floatingActionButton: FloatingActionButton(
+          elevation: 4,
+          onPressed: () async {
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+              type: FileType.custom,
+              allowedExtensions: ['pdf'],
+            );
 
-  Future toggleRecording() => SpeechService.toggleRecording(
-        onResult: (text) => setState(() => this.text = text),
-        onListening: (isListening) {
-          setState(() => this.isListening = isListening);
-        },
-      );
+            if (result != null) {
+              PlatformFile file = result.files.first;
+
+              getPDFtext(file.path.toString()).then((pdfText) {
+                final text = pdfText.replaceAll("\n", " ");
+                setState(() {
+                  _pdfText.text = text;
+                });
+              });
+            } else {
+              // User canceled the picker
+            }
+          },
+          child: const Icon(Icons.picture_as_pdf),
+        ));
+  }
 
   _sendForm() async {
     if (!_formKey.currentState!.validate()) return;
@@ -130,5 +148,17 @@ class _CapituloFirebaseFormWidgetState
           _formKey.currentState!.reset(),
           Navigator.pop(context),
         });
+  }
+
+  Future<String> getPDFtext(String path) async {
+    String text = "";
+    try {
+      text = await ReadPdfText.getPDFtext(path);
+    } on PlatformException {
+      if (kDebugMode) {
+        print('Error al obtener texto PDF.');
+      }
+    }
+    return text;
   }
 }

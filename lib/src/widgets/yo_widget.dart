@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:app_movil_ces/src/providers/main_provider.dart';
-import 'package:app_movil_ces/src/widgets/location_widget.dart';
 import 'package:app_movil_ces/src/widgets/setting_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +42,6 @@ class YoWidget extends StatelessWidget {
                 child: ListView(
               children: const <Widget>[
                 Card(elevation: 2.0, child: SettingWidget()),
-                Card(elevation: 2.0, child: LocationWidget()),
                 Card(
                     elevation: 2.0,
                     child: ListTile(

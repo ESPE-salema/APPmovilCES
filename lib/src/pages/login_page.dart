@@ -109,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   resp['idToken'];
                                             }
                                             if (resp['idToken'] == null) {
+                                              // ignore: use_build_context_synchronously
                                               showDialog(
                                                   context: context,
                                                   builder: (context) =>
