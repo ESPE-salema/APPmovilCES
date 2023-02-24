@@ -1,6 +1,7 @@
 # app_movil_ces
 
 A new Flutter project.
+Version Flutter: 3.7.1
 
 ## Getting Started
 
