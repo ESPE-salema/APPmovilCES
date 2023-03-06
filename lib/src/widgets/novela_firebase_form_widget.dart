@@ -49,15 +49,6 @@ class _NovelaFirebaseFormWidgetState extends State<NovelaFirebaseFormWidget> {
         child: Stack(
           alignment: AlignmentDirectional.topCenter,
           children: [
-            Container(
-              height: size.height * 0.4,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColorDark,
-              ])),
-            ),
             Column(
               children: [
                 SizedBox.square(dimension: 10.h),
@@ -71,7 +62,7 @@ class _NovelaFirebaseFormWidgetState extends State<NovelaFirebaseFormWidget> {
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(
                           width: 2.0,
-                          color: Theme.of(context).primaryColorDark)),
+                          color: Theme.of(context).primaryColorLight)),
                   child: Form(
                       key: _formKey,
                       child: Padding(
@@ -155,7 +146,7 @@ class _NovelaFirebaseFormWidgetState extends State<NovelaFirebaseFormWidget> {
                               maxLines: 2),
                           Padding(
                               padding: const EdgeInsets.only(top: 7.0),
-                              child: Text("Ingresar la fecha",
+                              child: Text("Fecha de publicación",
                                   style:
                                       Theme.of(context).textTheme.titleMedium)),
                           DatePickerWidget(

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.app_movil_ces">
    <application
-        android:label="app_movil_ces"
+        android:label="Novel Kaizen"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

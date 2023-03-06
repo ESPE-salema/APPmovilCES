@@ -4,6 +4,8 @@ import 'package:app_movil_ces/src/models/novela_model.dart';
 import 'package:app_movil_ces/src/widgets/novela_card.dart';
 import 'package:app_movil_ces/src/widgets/novela_firebase_form_widget.dart';
 
+import '../theme/app_theme.dart';
+
 class NovelaFirebaseWidget extends StatefulWidget {
   const NovelaFirebaseWidget({Key? key}) : super(key: key);
 
@@ -31,6 +33,19 @@ class _NovelaFirebaseWidgetState extends State<NovelaFirebaseWidget> {
         }
 
         return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.home),
+                  Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text('Inicio'))
+                ],
+              ),
+              backgroundColor: Palette.color,
+            ),
             body: snapshot.data == null
                 ? const Center(
                     child: SizedBox.square(
