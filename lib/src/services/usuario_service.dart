@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class UsuarioService {
   UsuarioService();
 
-  final String _urlRoot = "https://app_movil_ces.web.app/api/registro";
+  final String _urlRoot = "https://novelkaizen.web.app/api/registro";
   final String _firebaseAPIKey = 'AIzaSyB2TfT6ddcjjNfC107gX28ebC-6BHZUKvA';
 
   Future<Map<String, dynamic>> login(Usuario usuario) async {
