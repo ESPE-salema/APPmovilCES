@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MainProvider extends ChangeNotifier {
   bool _mode = true;
   String _token = "";
+  String _language = "es";
 
   bool get mode {
     return _mode;
@@ -21,6 +22,15 @@ class MainProvider extends ChangeNotifier {
   set token(String t) {
     _updateToken(t);
     _token = t;
+    notifyListeners();
+  }
+
+  String get language {
+    return _language;
+  }
+
+  set language(String value) {
+    _language = value;
     notifyListeners();
   }
 

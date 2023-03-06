@@ -1,3 +1,4 @@
+import 'package:app_movil_ces/src/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_movil_ces/src/bloc/login_bloc.dart';
@@ -27,8 +28,8 @@ class _LoginPageState extends State<LoginPage> {
       child: Stack(
         children: [
           Container(
-            color: Theme.of(context).primaryColorDark,
-            height: size * 0.4,
+            color: Palette.color,
+            height: size * 0.9,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 10.0, left: 35.0, right: 35.0),

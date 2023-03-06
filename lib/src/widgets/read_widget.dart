@@ -1,4 +1,4 @@
-import 'package:devicelocale/devicelocale.dart';
+import 'package:app_movil_ces/src/utils/language.dart';
 import 'package:flutter/material.dart';
 import 'package:app_movil_ces/src/models/capitulo_model.dart';
 import 'package:app_movil_ces/src/providers/main_provider.dart';
@@ -17,59 +17,106 @@ class ReadWidget extends StatefulWidget {
 
 class _ReadWidgetState extends State<ReadWidget> {
   late String _contentCapitulo = "";
+  late MainProvider mainProvider;
 
   @override
   void initState() {
+    mainProvider = Provider.of<MainProvider>(context, listen: false);
+    _translation(mainProvider.language);
     super.initState();
-    _translation();
   }
 
   @override
   Widget build(BuildContext context) {
-    final mainProvider = Provider.of<MainProvider>(context, listen: true);
+    mainProvider = Provider.of<MainProvider>(context, listen: true);
 
     return SafeArea(
         child: Scaffold(
-            body: CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          iconTheme: mainProvider.mode
-              ? const IconThemeData(color: Colors.black)
-              : const IconThemeData(color: Palette.color),
-          floating: true,
-          pinned: true,
-          elevation: 2,
-          title: Text(widget.model.tituloCapitulo ?? ""),
-        ),
-        SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: _contentCapitulo.isEmpty
-                  ? const Center(
-                      child: SizedBox.square(
-                          dimension: 50.0, child: CircularProgressIndicator()))
-                  : Text(
-                      _contentCapitulo,
-                      textAlign: TextAlign.justify,
-                    ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            iconTheme: mainProvider.mode
+                ? const IconThemeData(color: Colors.black)
+                : const IconThemeData(color: Palette.color),
+            floating: true,
+            pinned: true,
+            elevation: 2,
+            title: Text(widget.model.tituloCapitulo ?? ""),
+          ),
+          SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: _contentCapitulo.isEmpty
+                    ? const Center(
+                        child: SizedBox.square(
+                            dimension: 50.0,
+                            child: CircularProgressIndicator()))
+                    : Text(
+                        _contentCapitulo,
+                        textAlign: TextAlign.justify,
+                      ),
+              )),
+        ],
+      ),
+      endDrawer: Drawer(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+                child: ListView(
+              children: <Widget>[
+                Card(
+                    elevation: 2.0,
+                    child: ListTile(
+                        leading: const Icon(Icons.language),
+                        title: const Text("Idioma:"),
+                        trailing: DropdownButton(
+                          value: mainProvider.language,
+                          items: menuLanguageOptions
+                              .map((e) => DropdownMenuItem(
+                                    value: e.locale,
+                                    child: Text(e.language),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            // This is called when the user selects an item.
+                            setState(() {
+                              mainProvider.language = value!;
+                              _translation(mainProvider.language);
+                            });
+                          },
+                        ))),
+              ],
             ))
-      ],
-    )));
+          ],
+        ),
+      )),
+    ));
   }
 
-  _translation() async {
+  _translation(locale) async {
     try {
-      String? locale = await Devicelocale.currentLocale;
-      locale = locale!.substring(0, 2);
-      developer.log(locale);
-
       var translation = await GoogleTranslator()
           .translate(widget.model.contenido ?? "", to: locale);
+
       setState(() {
         _contentCapitulo = translation.text;
       });
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _contentCapitulo = widget.model.contenido ?? "";
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("No se pudo reconocer el idioma.",
+                    textAlign: TextAlign.center)),
+          );
+        });
+      }
       developer.log(e.toString());
     }
   }

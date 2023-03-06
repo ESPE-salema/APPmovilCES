@@ -27,7 +27,7 @@ class _CapituloFirebaseFormWidgetState
   final _formKey = GlobalKey<FormState>();
   String text = '';
   bool isListening = false;
-  late TextEditingController _pdfText;
+  final _pdfText = TextEditingController(text: "");
 
   @override
   void initState() {
@@ -36,15 +36,6 @@ class _CapituloFirebaseFormWidgetState
         .collection('novelas')
         .doc(widget.id)
         .collection('capitulos');
-    _pdfText = TextEditingController(text: '');
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    _pdfText.addListener(() {});
-    super.dispose();
   }
 
   @override
@@ -95,14 +86,14 @@ class _CapituloFirebaseFormWidgetState
                       TextFormField(
                           controller: _pdfText,
                           keyboardType: TextInputType.text,
-                          initialValue: _capitulo.contenido,
+                          //initialValue: _capitulo.contenido,
                           onSaved: (value) {
                             //Este evento se ejecuta cuando el Form ha sido guardado localmente
                             _capitulo.contenido =
                                 value; //Asigna el valor del TextFormField al atributo del modelo
                           },
                           //validator: (value) {return validateString(value!);},
-                          maxLength: 10000,
+                          //maxLength: 1000,
                           maxLines: 20),
                     ]),
                   )),
